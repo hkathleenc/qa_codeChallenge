@@ -39,4 +39,36 @@ describe("Employee Manager", () => {
       title: "Grand Poobah",
     });
   });
+
+  // Tests addded 12/06/20
+  it("can add a second employee", async () => {
+    await em.addEmployee();
+    await em.selectEmployeeByName("New Employee");
+    await em.editEmployee({
+      name: "Second Test Person",
+      phone: "5551234567",
+      title: "Intern",
+    });
+    await em.saveChanges();
+    await em.selectEmployeeByName("Dollie Berry");
+    await em.selectEmployeeByName("Second Test Person");
+    let employee = await em.getEmployeeInfo();
+    expect(employee.name).toEqual("Second Test Person");
+    expect(employee.phone).toEqual("5551234567");
+    expect(employee.title).toEqual("Intern");
+  });
+  it("can cancel unsaved changes", async ()  => {
+    await em.selectEmployeeByName("Bernice Ortiz");
+    await em.editEmployee({ title: "test title" });
+    //await em.cancelChanges();
+    await em.selectEmployeeByName("Phillip Weaver");
+    await em.selectEmployeeByName("Bernice Ortiz");
+    let employee = await em.getEmployeeInfo();
+    expect(employee).toEqual({
+      id: 1,
+      name: "Bernice Ortiz",
+      phone: "4824931093",
+      title: "CEO",
+    });
+  });
 });
